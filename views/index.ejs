@@ -10,17 +10,25 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap');
 
+        /* Gradient background with green and purple */
+        body {
+            background: linear-gradient(135deg, #4CAF50, #673AB7);
+            color: #ffffff;
+        }
+
         .chessboard {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            border: 8px solid #3b2b1a;
+            border: 8px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             aspect-ratio: 1 / 1;
-            background-color: #3b2b1a;
+            background-color: rgba(255, 255, 255, 0.1);
             font-family: "Noto Sans Symbols 2", sans-serif;
             width: 90vw;
             max-width: 700px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
 
         .square {
@@ -30,12 +38,14 @@
             transition: background-color 0.3s ease;
         }
 
+        /* Light squares with a green tint */
         .square.white {
-            background-color: #f0d9b5;
+            background-color: rgba(76, 175, 80, 0.3); /* Green shade */
         }
 
+        /* Dark squares with a purple tint */
         .square.black {
-            background-color: #b58863;
+            background-color: rgba(103, 58, 183, 0.3); /* Purple shade */
         }
 
         .piece {
@@ -45,13 +55,16 @@
             transition: transform 0.2s ease;
         }
 
+        /* White pieces with a glowing effect */
         .piece.white {
-            color: white;
-            filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.8));
+            color: #ffffff;
+            filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.8));
         }
 
+        /* Black pieces with a glowing purple effect */
         .piece.black {
-            color: black;
+            color: #673AB7; /* Purple color for black pieces */
+            filter: drop-shadow(0px 0px 8px rgba(103, 58, 183, 0.8));
         }
 
         .piece:hover {
@@ -66,32 +79,61 @@
             transform: rotate(180deg);
         }
 
+        /* Highlight for legal moves */
         .highlight {
-            background-color: rgba(0, 255, 0, 0.5);
-            box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.7);
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.7);
+        }
+
+        /* Captured pieces container */
+        #captured-white, #captured-black {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Input and buttons styling */
+        #gameLink {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            backdrop-filter: blur(5px);
+        }
+
+        #copyGameLink, #shareGame {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #copyGameLink:hover, #shareGame:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <h1 class="text-3xl font-bold mb-4 text-center">Multiplayer Chess</h1>
+    <h1 class="text-3xl font-bold mb-4 text-center text-white">Multiplayer Chess</h1>
 
     <div class="flex flex-col items-center justify-center gap-2 mb-4 w-full max-w-[700px]">
         <div class="flex flex-col sm:flex-row items-center justify-center gap-2 w-full">
             <input type="text" id="gameLink" class="border px-3 py-2 rounded w-full sm:w-64 text-center" readonly>
-            <button id="copyGameLink" class="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto">
+            <button id="copyGameLink" class="px-4 py-2 rounded w-full sm:w-auto">
                 Copy
             </button>
-            <button id="shareGame" class="bg-green-500 text-white px-4 py-2 rounded w-full sm:w-auto">
+            <button id="shareGame" class="px-4 py-2 rounded w-full sm:w-auto">
                 Share on WhatsApp
             </button>
         </div>
-        <p class="text-sm text-gray-600 text-center">Share this link to invite a friend!</p>
+        <p class="text-sm text-gray-300 text-center">Share this link to invite a friend!</p>
     </div>
 
     <div class="flex justify-between w-full max-w-[700px] mb-4">
-        <div id="captured-black" class="text-xl flex gap-1 text-black"></div>
+        <div id="captured-black" class="text-xl flex gap-1 text-white"></div>
         <div id="captured-white" class="text-xl flex gap-1 text-white"></div>
     </div>
 
