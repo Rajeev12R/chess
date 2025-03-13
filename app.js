@@ -3,20 +3,28 @@ const socket = require("socket.io");
 const http = require("http");
 const { Chess } = require("chess.js");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const io = socket(server);
+const io = socket(server, {
+    cors: {
+        origin: "*", // Allow any frontend to connect
+        methods: ["GET", "POST"]
+    }
+});
 
 const chess = new Chess();
 let players = {};
 let currentPlayer = "w";
 
+app.use(cors()); // Enable CORS for Render
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "../public"))); // Adjust path for Vercel
+app.set("views", path.join(__dirname, "views")); // Adjusted path for Render
+app.use(express.static(path.join(__dirname, "public"))); // Adjusted path
 
 app.get("/", (req, res) => {
-    res.render("../views/index", { title: "Welcome to Chess Game" });
+    res.render("index", { title: "Welcome to Chess Game" });
 });
 
 io.on("connection", (uniquesocket) => {
@@ -62,5 +70,8 @@ io.on("connection", (uniquesocket) => {
     });
 });
 
-// Export for Vercel
-module.exports = server;
+// Use PORT from environment variables (Render sets it automatically)
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
