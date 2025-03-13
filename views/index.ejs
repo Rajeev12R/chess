@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Chessboard</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Dancing+Script:wght@400..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Great+Vibes&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Symbols+2&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Style+Script&display=swap');
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 8px solid #3b2b1a;
+            border-radius: 12px;
+            aspect-ratio: 1 / 1;
+            background-color: #3b2b1a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-family: "Noto Sans Symbols 2", sans-serif;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .square.white {
+            background-color: #f0d9b5;
+        }
+
+        .square.black {
+            background-color: #b58863;
+        }
+
+        .piece {
+            font-size: min(6vw, 50px);
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s ease;
+        }
+
+        .piece.white {
+            color: white;
+            filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.8));
+        }
+
+        .piece.black {
+            color: black;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .flipped {
+            transform: rotate(180deg);
+        }
+
+        .flipped .piece {
+            transform: rotate(180deg);
+        }
+
+        .highlight {
+            background-color: rgba(0, 255, 0, 0.5);
+            box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.7);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="flex justify-between w-full max-w-[700px] mb-4">
+        <div id="captured-black" class="text-xl text-black"></div>
+        <div id="captured-white" class="text-xl text-white"></div>
+    </div>
+
+    <div class="chessboard w-full max-w-[90vw] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]"></div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+        integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/chessgame.js"></script>
+</body>
+
+</html>
