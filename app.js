@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socket(server, {
     cors: {
-        origin: "*", // Allow any frontend to connect
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
@@ -18,31 +18,42 @@ const chess = new Chess();
 let players = {};
 let currentPlayer = "w";
 
-app.use(cors()); // Enable CORS for Render
+app.use(cors());
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views")); // Adjusted path for Render
-app.use(express.static(path.join(__dirname, "public"))); // Adjusted path
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-    res.render("index", { title: "Welcome to Chess Game" });
+    res.render("index", { title: "Multiplayer Chess Game" });
 });
 
-io.on("connection", (uniquesocket) => {
-    console.log("A new user connected:", uniquesocket.id);
+// Route for creating a game link
+app.get("/create-game", (req, res) => {
+    const gameId = Math.random().toString(36).substr(2, 6);
+    res.redirect(`/game/${gameId}`);
+});
+
+// Route to join a specific game
+app.get("/game/:id", (req, res) => {
+    res.render("index", { gameId: req.params.id });
+});
+
+io.on("connection", (socket) => {
+    console.log("A new user connected:", socket.id);
 
     if (!players.white) {
-        players.white = uniquesocket.id;
-        uniquesocket.emit("playerRole", "w");
+        players.white = socket.id;
+        socket.emit("playerRole", "w");
     } else if (!players.black) {
-        players.black = uniquesocket.id;
-        uniquesocket.emit("playerRole", "b");
+        players.black = socket.id;
+        socket.emit("playerRole", "b");
     } else {
-        uniquesocket.emit("spectatorRole");
+        socket.emit("spectatorRole");
     }
 
-    uniquesocket.on("disconnect", () => {
-        if (uniquesocket.id === players.white) delete players.white;
-        else if (uniquesocket.id === players.black) delete players.black;
+    socket.on("disconnect", () => {
+        if (socket.id === players.white) delete players.white;
+        else if (socket.id === players.black) delete players.black;
 
         if (!players.white && !players.black) {
             chess.reset();
@@ -51,10 +62,10 @@ io.on("connection", (uniquesocket) => {
         }
     });
 
-    uniquesocket.on("move", (move) => {
+    socket.on("move", (move) => {
         try {
-            if (chess.turn() === "w" && uniquesocket.id !== players.white) return;
-            if (chess.turn() === "b" && uniquesocket.id !== players.black) return;
+            if (chess.turn() === "w" && socket.id !== players.white) return;
+            if (chess.turn() === "b" && socket.id !== players.black) return;
 
             const res = chess.move(move);
             if (res) {
@@ -62,7 +73,7 @@ io.on("connection", (uniquesocket) => {
                 io.emit("move", move);
                 io.emit("boardState", chess.fen());
             } else {
-                uniquesocket.emit("invalidMove", move);
+                socket.emit("invalidMove", move);
             }
         } catch (error) {
             console.error("Move Error:", error.message);
@@ -70,8 +81,7 @@ io.on("connection", (uniquesocket) => {
     });
 });
 
-// Use PORT from environment variables (Render sets it automatically)
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

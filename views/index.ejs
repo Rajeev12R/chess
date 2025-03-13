@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Chessboard</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <title>Multiplayer Chess Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-
-        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Dancing+Script:wght@400..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Great+Vibes&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Symbols+2&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Style+Script&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap');
 
         .chessboard {
             display: grid;
@@ -19,7 +18,6 @@
             border-radius: 12px;
             aspect-ratio: 1 / 1;
             background-color: #3b2b1a;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             font-family: "Noto Sans Symbols 2", sans-serif;
         }
 
@@ -27,8 +25,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: 100%;
             transition: background-color 0.3s ease;
         }
 
@@ -76,20 +72,49 @@
 </head>
 
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <h1 class="text-3xl font-bold mb-4">Multiplayer Chess</h1>
+
+    
+    <div class="flex items-center gap-2 mb-4">
+        <input type="text" id="gameLink" class="border px-3 py-2 rounded w-64 text-center" readonly>
+        <button id="copyGameLink" class="bg-blue-500 text-white px-4 py-2 rounded">
+            Copy
+        </button>
+        <button id="shareGame" class="bg-green-500 text-white px-4 py-2 rounded">
+            Share on WhatsApp
+        </button>
+    </div>
+
     <div class="flex justify-between w-full max-w-[700px] mb-4">
-        <div id="captured-black flex gap-1" class="text-xl text-black"></div>
-        <div id="captured-white flex gap-1" class="text-xl text-white"></div>
+        <div id="captured-black" class="text-xl flex gap-1 text-black"></div>
+        <div id="captured-white" class="text-xl flex gap-1 text-white"></div>
     </div>
 
     <div class="chessboard w-full max-w-[90vw] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]"></div>
 
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
-        integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
-        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="/js/chessgame.js"></script>
+
+    <script>
+        const gameLink = window.location.origin + "/create-game";
+        document.getElementById("gameLink").value = gameLink;
+
+        document.getElementById("shareGame").addEventListener("click", function () {
+            const message = `Join me for a game of chess! Click here: ${gameLink}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
+        });
+
+        document.getElementById("copyGameLink").addEventListener("click", function () {
+            const input = document.getElementById("gameLink");
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            alert("Game link copied!");
+        });
+    </script>
+
 </body>
 
 </html>

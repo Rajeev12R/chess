@@ -111,7 +111,6 @@ const handleMove = (sourceSquare, targetSquare) => {
 
     const result = chess.move(move);
     if (result) {
-
         if (result.captured) {
             capturedPieces[result.color === "w" ? "b" : "w"].push(result.captured);
         }
@@ -121,7 +120,6 @@ const handleMove = (sourceSquare, targetSquare) => {
         renderBoard();
     }
 };
-
 
 const getPieceUnicode = (piece) => {
     const unicodePieces = {
