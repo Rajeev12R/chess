@@ -19,6 +19,8 @@
             aspect-ratio: 1 / 1;
             background-color: #3b2b1a;
             font-family: "Noto Sans Symbols 2", sans-serif;
+            width: 90vw;
+            max-width: 700px;
         }
 
         .square {
@@ -73,17 +75,19 @@
 
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <h1 class="text-3xl font-bold mb-4">Multiplayer Chess</h1>
+    <h1 class="text-3xl font-bold mb-4 text-center">Multiplayer Chess</h1>
 
-    
-    <div class="flex items-center gap-2 mb-4">
-        <input type="text" id="gameLink" class="border px-3 py-2 rounded w-64 text-center" readonly>
-        <button id="copyGameLink" class="bg-blue-500 text-white px-4 py-2 rounded">
-            Copy
-        </button>
-        <button id="shareGame" class="bg-green-500 text-white px-4 py-2 rounded">
-            Share on WhatsApp
-        </button>
+    <div class="flex flex-col items-center justify-center gap-2 mb-4 w-full max-w-[700px]">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-2 w-full">
+            <input type="text" id="gameLink" class="border px-3 py-2 rounded w-full sm:w-64 text-center" readonly>
+            <button id="copyGameLink" class="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto">
+                Copy
+            </button>
+            <button id="shareGame" class="bg-green-500 text-white px-4 py-2 rounded w-full sm:w-auto">
+                Share on WhatsApp
+            </button>
+        </div>
+        <p class="text-sm text-gray-600 text-center">Share this link to invite a friend!</p>
     </div>
 
     <div class="flex justify-between w-full max-w-[700px] mb-4">
@@ -91,7 +95,7 @@
         <div id="captured-white" class="text-xl flex gap-1 text-white"></div>
     </div>
 
-    <div class="chessboard w-full max-w-[90vw] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]"></div>
+    <div class="chessboard"></div>
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
