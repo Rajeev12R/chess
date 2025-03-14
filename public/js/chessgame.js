@@ -31,11 +31,11 @@ const renderBoard = () => {
                 if (playerRole === square.color) {
                     pieceElement.addEventListener("click", (event) => {
                         event.stopPropagation();
-                        if (selectedSquare && selectedSquare.row === rowidx && selectedSquare.col === squareidx) {
-                            clearHighlights();
-                            return;
-                        }
-                        highlightMoves(rowidx, squareidx);
+                        handlePieceClick(rowidx, squareidx);
+                    });
+                    pieceElement.addEventListener("touchstart", (event) => {
+                        event.stopPropagation();
+                        handlePieceClick(rowidx, squareidx);
                     });
                 } else {
                     pieceElement.style.cursor = "not-allowed";
@@ -45,13 +45,10 @@ const renderBoard = () => {
             }
 
             squareElement.addEventListener("click", function () {
-                if (selectedSquare) {
-                    const targetSquare = {
-                        row: parseInt(squareElement.dataset.row),
-                        col: parseInt(squareElement.dataset.col),
-                    };
-                    handleMove(selectedSquare, targetSquare);
-                }
+                handleSquareClick(squareElement);
+            });
+            squareElement.addEventListener("touchstart", function () {
+                handleSquareClick(squareElement);
             });
 
             boardElement.appendChild(squareElement);
@@ -75,6 +72,24 @@ const renderBoard = () => {
         pieceElement.innerText = getPieceUnicode({ type: piece, color: "b" });
         capturedBlackElement.appendChild(pieceElement);
     });
+};
+
+const handlePieceClick = (row, col) => {
+    if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) {
+        clearHighlights();
+        return;
+    }
+    highlightMoves(row, col);
+};
+
+const handleSquareClick = (squareElement) => {
+    if (selectedSquare) {
+        const targetSquare = {
+            row: parseInt(squareElement.dataset.row),
+            col: parseInt(squareElement.dataset.col),
+        };
+        handleMove(selectedSquare, targetSquare);
+    }
 };
 
 const highlightMoves = (row, col) => {
