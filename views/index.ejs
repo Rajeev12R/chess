@@ -5,12 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Multiplayer Chess Game</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#673AB7" />
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap');
 
-        /* Gradient background with green and purple */
         body {
             background: linear-gradient(135deg, #4CAF50, #673AB7);
             color: #ffffff;
@@ -38,14 +39,11 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Light squares with a green tint */
         .square.white {
-            background-color: rgba(76, 175, 80, 0.3); /* Green shade */
+            background-color: rgba(76, 175, 80, 0.3); 
         }
-
-        /* Dark squares with a purple tint */
         .square.black {
-            background-color: rgba(103, 58, 183, 0.3); /* Purple shade */
+            background-color: rgba(103, 58, 183, 0.3); 
         }
 
         .piece {
@@ -54,16 +52,12 @@
             user-select: none;
             transition: transform 0.2s ease;
         }
-
-        /* White pieces with a glowing effect */
         .piece.white {
             color: #ffffff;
             filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.8));
         }
-
-        /* Black pieces with a glowing purple effect */
         .piece.black {
-            color: #673AB7; /* Purple color for black pieces */
+            color: #673AB7;
             filter: drop-shadow(0px 0px 8px rgba(103, 58, 183, 0.8));
         }
 
@@ -79,21 +73,17 @@
             transform: rotate(180deg);
         }
 
-        /* Highlight for legal moves */
         .highlight {
             background-color: rgba(255, 255, 255, 0.3);
             box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.7);
         }
 
-        /* Captured pieces container */
         #captured-white, #captured-black {
             padding: 10px;
             border-radius: 8px;
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
         }
-
-        /* Input and buttons styling */
         #gameLink {
             background-color: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -101,7 +91,7 @@
             backdrop-filter: blur(5px);
         }
 
-        #copyGameLink, #shareGame {
+        #copyGameLink, #shareGame, #installButton {
             background-color: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
@@ -109,8 +99,13 @@
             backdrop-filter: blur(5px);
         }
 
-        #copyGameLink:hover, #shareGame:hover {
+        #copyGameLink:hover, #shareGame:hover, #installButton:hover {
             background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #installButton {
+            display: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -129,11 +124,14 @@
                 Share on WhatsApp
             </button>
         </div>
+        <button id="installButton" class="px-4 py-2 rounded w-full sm:w-auto">
+            Install Now
+        </button>
         <p class="text-sm text-gray-300 text-center">Share this link to invite a friend!</p>
     </div>
 
     <div class="flex justify-between w-full max-w-[700px] mb-4">
-        <div id="captured-black" class="text-xl flex gap-1 text-white"></div>
+        <div id="captured-black" class="text-xl flex gap-1 text-black"></div>
         <div id="captured-white" class="text-xl flex gap-1 text-white"></div>
     </div>
 
@@ -158,6 +156,51 @@
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value);
             alert("Game link copied!");
+        });
+
+        // Register the service worker
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/service-worker.js")
+                    .then((registration) => {
+                        console.log("Service Worker registered: ", registration);
+                    })
+                    .catch((error) => {
+                        console.log("Service Worker registration failed: ", error);
+                    });
+            });
+        }
+
+        // Install Now button logic
+        let deferredPrompt;
+        const installButton = document.getElementById("installButton");
+
+        window.addEventListener("beforeinstallprompt", (event) => {
+            // Prevent the default prompt
+            event.preventDefault();
+            // Save the event for later use
+            deferredPrompt = event;
+            // Show the install button
+            installButton.style.display = "block";
+        });
+
+        installButton.addEventListener("click", () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === "accepted") {
+                        console.log("User accepted the install prompt");
+                    } else {
+                        console.log("User dismissed the install prompt");
+                    }
+                    // Reset the deferred prompt
+                    deferredPrompt = null;
+                    // Hide the install button
+                    installButton.style.display = "none";
+                });
+            }
         });
     </script>
 

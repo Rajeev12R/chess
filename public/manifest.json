@@ -1,0 +1,22 @@
+{
+    "short_name": "Chess",
+    "name": "Multiplayer Chess Game",
+    "description": "Play multiplayer chess with friends in real-time.",
+    "icons": [
+      {
+        "src": "/icons/icon.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/icons/icon.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#4CAF50",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#673AB7"
+  }
