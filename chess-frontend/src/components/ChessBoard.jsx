@@ -4,7 +4,7 @@ import { Chess } from "chess.js"
 import { Howl } from "howler"
 import io from "socket.io-client"
 
-const socket = io("http://localhost:3000", {
+const socket = io("https://chess-2-syeu.onrender.com", {
     withCredentials: true,
 })
 

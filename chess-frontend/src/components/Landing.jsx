@@ -11,7 +11,7 @@ const Landing = () => {
 
     const createNewRoom = () => {
         setIsCreating(true);
-        fetch('http://localhost:3000/api/rooms', {
+        fetch('https://chess-2-syeu.onrender.com/api/rooms', {
             method: 'POST',
             credentials: 'include'
         })
