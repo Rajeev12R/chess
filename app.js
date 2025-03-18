@@ -7,9 +7,17 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
+
+// Allow both development and production URLs
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://kingchess.vercel.app",
+    "https://kingchess.vercel.app/"
+];
+
 const io = new Server(server, {
     cors: {
-        origin: "https://kingchess.vercel.app/", // Frontend URL
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -18,10 +26,20 @@ const io = new Server(server, {
 // Store active rooms
 const rooms = new Map();
 
-// Configure CORS for Express
+// Configure CORS for Express with multiple origins
 app.use(cors({
-    origin: "https://kingchess.vercel.app/",
-    credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "POST"]
 }));
 
 app.use(express.json());
@@ -292,7 +310,7 @@ io.on("connection", (socket) => {
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

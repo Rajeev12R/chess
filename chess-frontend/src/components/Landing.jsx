@@ -9,32 +9,62 @@ const Landing = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
 
-    const createNewRoom = () => {
+    const createNewRoom = async () => {
         setIsCreating(true);
-        fetch('https://chess-2-syeu.onrender.com/api/rooms', {
-            method: 'POST',
-            credentials: 'include'
-        })
-            .then(res => res.json())
-            .then(data => {
+        setError(null);
+
+        try {
+            const response = await fetch('https://chess-2-syeu.onrender.com/api/rooms', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.roomId) {
                 const link = `${window.location.origin}/game/${data.roomId}`;
                 setRoomLink(link);
                 navigate(`/game/${data.roomId}`);
-            })
-            .catch(err => {
-                console.error('Error creating room:', err);
-                setError('Failed to create room');
-                setIsCreating(false);
-            });
+            } else {
+                throw new Error('No room ID received from server');
+            }
+        } catch (err) {
+            console.error('Error creating room:', err);
+            setError(`Failed to create room: ${err.message}`);
+            setIsCreating(false);
+        }
     };
 
-    const joinRoom = () => {
+    const joinRoom = async () => {
         if (!roomId.trim()) {
             setError('Please enter a room ID');
             return;
         }
+
         setIsJoining(true);
-        navigate(`/game/${roomId.trim()}`);
+        setError(null);
+
+        try {
+            const response = await fetch(`https://chess-2-syeu.onrender.com/api/rooms/${roomId.trim()}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Room not found or invalid`);
+            }
+
+            navigate(`/game/${roomId.trim()}`);
+        } catch (err) {
+            console.error('Error joining room:', err);
+            setError(`Failed to join room: ${err.message}`);
+            setIsJoining(false);
+        }
     };
 
     const copyRoomLink = () => {

@@ -6,6 +6,10 @@ import io from "socket.io-client"
 
 const socket = io("https://chess-2-syeu.onrender.com", {
     withCredentials: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    transports: ['websocket', 'polling']
 })
 
 const sounds = {
@@ -127,6 +131,24 @@ const ChessBoard = () => {
                 `${data.color === "w" ? "White" : "Black"} player has left the game`
             )
         })
+
+        // Add socket connection error handling
+        socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            alert('Connection error. Please check your internet connection and try again.');
+        });
+
+        socket.on('connect_timeout', () => {
+            console.error('Socket connection timeout');
+            alert('Connection timeout. Please try again.');
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+            if (error.message) {
+                alert(error.message);
+            }
+        });
 
         return () => {
             socket.off("playerRole")
