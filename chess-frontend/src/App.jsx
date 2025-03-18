@@ -5,10 +5,13 @@ import ChessBoard from './components/ChessBoard';
 
 const App = () => {
   return (
+    <div className='overflow-hidden'>
+
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/game/:roomId" element={<ChessBoard />} />
     </Routes>
+    </div>
   );
 };
 
