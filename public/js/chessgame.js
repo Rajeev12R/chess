@@ -7,6 +7,15 @@ let selectedSquare = null;
 let playerRole = null;
 let capturedPieces = { w: [], b: [] };
 
+// Initialize sound effects
+const sounds = {
+    move: new Howl({ src: ['/sounds/move.mp3'] }),
+    capture: new Howl({ src: ['/sounds/capture.mp3'] }),
+    check: new Howl({ src: ['/sounds/check.mp3'] }),
+    gameStart: new Howl({ src: ['/sounds/game-start.mp3'] }),
+    gameEnd: new Howl({ src: ['/sounds/game-end.mp3'] })
+};
+
 const renderBoard = () => {
     const board = chess.board();
     boardElement.innerHTML = "";
@@ -112,6 +121,7 @@ const highlightMoves = (row, col) => {
 
 const clearHighlights = () => {
     document.querySelectorAll(".highlight").forEach((el) => el.classList.remove("highlight"));
+    document.querySelectorAll(".capture-highlight").forEach((el) => el.classList.remove("capture-highlight"));
     selectedSquare = null;
 };
 
@@ -128,6 +138,25 @@ const handleMove = (sourceSquare, targetSquare) => {
     if (result) {
         if (result.captured) {
             capturedPieces[result.color === "w" ? "b" : "w"].push(result.captured);
+            sounds.capture.play();
+
+            // Add capture highlight effect
+            const targetSquareElement = document.querySelector(
+                `.square[data-row="${targetSquare.row}"][data-col="${targetSquare.col}"]`
+            );
+            if (targetSquareElement) {
+                targetSquareElement.classList.add("capture-highlight");
+                // Remove the highlight after animation
+                setTimeout(() => {
+                    targetSquareElement.classList.remove("capture-highlight");
+                }, 500);
+            }
+        } else {
+            sounds.move.play();
+        }
+
+        if (chess.in_check()) {
+            sounds.check.play();
         }
 
         socket.emit("move", move);
@@ -146,6 +175,7 @@ const getPieceUnicode = (piece) => {
 
 socket.on("playerRole", function (role) {
     playerRole = role;
+    sounds.gameStart.play();
     renderBoard();
 });
 
@@ -162,8 +192,37 @@ socket.on("boardState", function (fen) {
 socket.on("move", function (move) {
     const result = chess.move(move);
 
-    if (result && result.captured) {
-        capturedPieces[result.color === "w" ? "b" : "w"].push(result.captured);
+    if (result) {
+        if (result.captured) {
+            capturedPieces[result.color === "w" ? "b" : "w"].push(result.captured);
+            sounds.capture.play();
+
+            // Add capture highlight effect for opponent's move
+            const targetSquare = {
+                row: 8 - parseInt(move.to[1]),
+                col: move.to.charCodeAt(0) - 97
+            };
+            const targetSquareElement = document.querySelector(
+                `.square[data-row="${targetSquare.row}"][data-col="${targetSquare.col}"]`
+            );
+            if (targetSquareElement) {
+                targetSquareElement.classList.add("capture-highlight");
+                // Remove the highlight after animation
+                setTimeout(() => {
+                    targetSquareElement.classList.remove("capture-highlight");
+                }, 500);
+            }
+        } else {
+            sounds.move.play();
+        }
+
+        if (chess.in_check()) {
+            sounds.check.play();
+        }
+
+        if (chess.is_game_over()) {
+            sounds.gameEnd.play();
+        }
     }
 
     renderBoard();
