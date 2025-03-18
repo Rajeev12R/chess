@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Multiplayer Chess</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="description" content="Real-time multiplayer chess game with modern interface">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Chess">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="196x196" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Prevent phone number detection -->
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="/sounds/move.mp3" as="audio">
+    <link rel="preload" href="/sounds/capture.mp3" as="audio">
+    <link rel="preload" href="/js/chess.js" as="script">
+    <link rel="preload" href="/js/socket.io.js" as="script">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Your existing app content -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/socket.io.js"></script>
+    <script src="/js/chess.js"></script>
+    <script src="/js/howler.min.js"></script>
+    <script src="/js/chessgame.js"></script>
+
+    <!-- PWA Installation Prompt -->
+    <div id="pwa-install-prompt" style="display: none;" class="install-prompt">
+        <div class="prompt-content">
+            <p>Install Chess Game for the best experience</p>
+            <button id="install-button">Install</button>
+            <button id="close-prompt">Not Now</button>
+        </div>
+    </div>
+
+    <script>
+        // PWA Installation
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show install prompt
+            const promptElement = document.getElementById('pwa-install-prompt');
+            promptElement.style.display = 'block';
+        });
+
+        document.getElementById('install-button').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            // Show installation prompt
+            deferredPrompt.prompt();
+
+            // Wait for user choice
+            const { outcome } = await deferredPrompt.userChoice;
+
+            // Clear prompt
+            deferredPrompt = null;
+            document.getElementById('pwa-install-prompt').style.display = 'none';
+        });
+
+        document.getElementById('close-prompt').addEventListener('click', () => {
+            document.getElementById('pwa-install-prompt').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
