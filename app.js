@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173", // Frontend URL
+        origin: "https://kingchess.vercel.app/", // Frontend URL
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -20,7 +20,7 @@ const rooms = new Map();
 
 // Configure CORS for Express
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://kingchess.vercel.app/",
     credentials: true
 }));
 
